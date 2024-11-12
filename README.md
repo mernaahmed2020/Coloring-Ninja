@@ -1,22 +1,21 @@
-# Connect-4-AI-project-
-"AI Project for Connect 4 with search algorithms."
-Connect 4 AI - Problem Modeling
-1. State Space Representation:
-The state space for the Connect 4 game consists of all possible board configurations, represented as a 6x7 grid, where each cell can be empty (0), occupied by Player 1 (1), or Player 2 (2). The total number of unique configurations is vast, but many configurations are not valid due to game rules.
+# ColoringNinja-AI-project-
+1. Problem Modeling: 
+o State Space Representation: An 8x8 grid. Each cell can be colored with one of four colors (red, blue, pink, mint) and no adjacent cells should be the same color.  
+ o Initial and Goal States: Initial state: the board is empty and the goal state: all board is colored and  no adjacent cells have the same color. 
+o Actions: the agent can move to color one cell at a time
+ 
+o Transition function:
+ Update the game state and  detect a win or when there are no available moves (two adjacent cells will be the same color)
 
-2. Initial and Goal States:
-Initial State: The board starts empty with all cells set to 0.
-Goal State: The game ends when a player connects four of their pieces in a horizontal, vertical, or diagonal line.
-3. Actions:
-Players take turns choosing a column to drop a piece into. The piece will fall to the lowest empty row in the selected column.
+2. Modeling Assumptions: 
+O colors are limited and each color palette has a cost (5 coins)
+. on coloring a cell correctly the agent collects 5 coins 
+4. Heuristic Search: 
+o Define two heuristic functions suitable for the problem:
+Calculate the difference between the goal and the current state
 
-4. Transition Function:
-The transition occurs when a player places a piece into a column, which will fall to the lowest empty row within that column. The state is updated after every move.
 
-5. Problem Size:
-The game is played on a 6x7 board, so there are 42 cells. Each cell has three possible values, resulting in a large but manageable state space.
+—> penalty for buying extra color pallets : phase 2
+  
 
-6. Modeling Assumptions:
-Players take turns placing pieces into columns.
-The game ends when a player connects four pieces.
-There are no draws, and players alternate turns.
+
