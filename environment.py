@@ -16,7 +16,8 @@ class coloringNinja():
         
     def getState(self):
         
-        return[row[:] for row in self.grid] # making a copy of the current state (intialy all uncolcored)
+        gridTuple = tuple(tuple(row) for row in self.grid)
+        return(gridTuple,self.agentPosition,self.savings)
         
         
     def getGoalState(self):  
@@ -28,12 +29,11 @@ class coloringNinja():
                 color_index = (row + column ) % len(self.colorList)
                 goal[row][column] = self.colorList[color_index]
             
-        return goal      
+        return tuple(tuple(row) for row in goal)    # i changed it to a tuble instead of i list to ensure that it wont change by acciedeint 
 
 
     def isGoal(self):
-        if self.getState() == self.getGoalState():
-            return ("Reached the goal")
+        return self.getState() == self.getGoalState()
 
     def printGoalState(self):
         print("Goal state:")
@@ -42,7 +42,7 @@ class coloringNinja():
         print()
 
     #check the adjecnt cells
-    def isAdjacent(self,row,column,color):
+    def isAdjacent(row,column,color):
                     #can cause a problem if out of boundry
         adjecntCells = [(row,column-1),(row,column+1),(row-1,column),(row+1,column)]
         for r,c in adjecntCells:
@@ -122,11 +122,29 @@ class coloringNinja():
             return False
               
         
-    
-            
+    def getActions(self):
+        actions=[]
+        row,column = self.agentPosition
+        directions = ["up","down","right","left"]
+        for direction in directions:
+            if direction =="up" and row >0:
+                actions.append()
+            elif direction == "down" and row < (self.size- 1):
+                actions.append(("move", "down"))
+            elif direction == "right" and column <(self.size- 1):
+                actions.append(("move", "right"))
+            elif direction == "left" and column >0:
+                actions.append(("move", "left"))           
 
+        if self.grid[row][column] =="uncolored":
+            for color in self.colorList:
+                if self.isAdjacent(row, column, color) and self.paletteQuantity[color] >0:
+                    
+                    actions.append(("color", color))
+        
+        return actions           
 game = coloringNinja(size=8)  
 game.printGoalState()  
 
         
-      
+
