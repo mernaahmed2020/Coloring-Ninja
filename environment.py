@@ -1,7 +1,7 @@
 class coloringNinja():
-    def __init__(self, lineSize=8, paletteCost=3, points=1, paletteQuantitiy=5):
+    def __init__(self, lineSize=16, paletteCost=3, points=1, paletteQuantitiy=2):
         self.size = lineSize
-        self.colorList = ["red", "blue", "green", "pink"]
+        self.colorList = ["🍓", "🐳", "🐸", "🌸"]
         self.paletteCost = paletteCost
         self.paletteQuantity = {color: paletteQuantitiy for color in self.colorList}
         self.points = points
@@ -25,16 +25,17 @@ class coloringNinja():
     def getColorForPosition(self, pos):
         
         if (pos+1) % 2 == 0:
-            return "red"
+            return "🍓"
         elif (pos+1) % 3 == 0:
-            return "green"
+            return "🐸"
         elif (pos+1) % 5 == 0:
-            return "blue"
+            return "🐳"
         
-        return "pink"
+        return "🌸"
 
     def isGoal(self):
-        return self.line == self.goalState
+        if self.line == self.goalState:
+            print("goal raeched")
 
     def printGoalState(self):
         print("Goal state:", self.goalState)
@@ -46,11 +47,6 @@ class coloringNinja():
             
             # Debugging print to show the current color attempt
             print(f"Coloring position {self.agentPosition} with {color}")  
-
-            # If the agent doesn't have the color in the palette, check if they can buy it
-            if self.paletteQuantity[color] == 0:
-                print(f"Skipping {color} at position {self.agentPosition} - No palette available")
-                return self.line
             
             if self.paletteQuantity[color] > 0:  # Can color normally
                 self.line[self.agentPosition] = color
@@ -83,24 +79,56 @@ class coloringNinja():
 
     def getActions(self, direction):
         actions = []
-        while self.agentPosition < len(self.line):
-            
-            if self.line[self.agentPosition] == "uncolored":
-                self.colorCells() 
-                color = self.line[self.agentPosition]
-                if color != "uncolored":  #coloring successful
-                    actions.append(("color", color))
-                else:
-                    print(f"Skipping cell at {self.agentPosition} - No coloring done")
-        
+        while self.agentPosition < len(self.line) or "uncolored" in self.line:
+            self.colorCells()
+            color = self.line[self.agentPosition]
+            if color != "uncolored":  # coloring successful
+                actions.append(("color", color))
+            else:
+                print(f"Skipping cell at {self.agentPosition} - No coloring done")
+
+            # Move the agent based on the direction
             success = self.moveAgent(direction)
             if success:
                 actions.append(("moved", direction))
             else:
                 actions.append(("invalid move", direction))
+            
+            # If the agent reaches the end of the line and there are uncolored cells, loop back to the beginning
+            if self.agentPosition == len(self.line) - 1 and "uncolored" in self.line:
+                print("End of line reached. Looping back to the start.")
+                self.agentPosition = 0
 
-            return actions
+        return actions
+
     
     
 ninja = coloringNinja()
 ninja.printGoalState()
+
+
+# def test_color_cells():
+#     ninja = coloringNinja(lineSize=32, paletteQuantitiy=2)  # Extended line size for position 24
+#     ninja.agentPosition = 24  # Start at position 24 for testing
+
+#     # Try to color the cells and check the results
+#     ninja.colorCells()  # Should color position 24 ("blue")
+#     assert ninja.line[24] == "blue", f"Expected 'blue' at position 24, but got {ninja.line[24]}"
+#     assert ninja.paletteQuantity["blue"] == 1, f"Expected 1 'blue' palette, but got {ninja.paletteQuantity['blue']}"
+    
+#     print("Color cells test passed!")
+
+# test_color_cells()
+
+# test_color_cells()
+
+
+# def run_tests():
+
+#     test_color_cells()
+
+
+# run_tests()
+
+
+    
