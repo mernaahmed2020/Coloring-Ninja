@@ -13,6 +13,18 @@ class coloringNinja():
         self.initialState = self.getState()
         self.goalState = self.getGoalState()
 
+    def displayLineState(self):
+                """
+                Displays the current state of the environment, including the line, agent position, savings, and palette quantities.
+                """
+                print("Current line state:")
+                for index, cell in enumerate(self.line):
+                    marker = "🔲" if cell == "uncolored" else "✅"
+                    print(f"Position {index+1}: {cell} {marker}")
+                print(f"Agent Position: {self.agentPosition}")
+                print(f"Savings: {self.savings}, Points: {self.points}")
+                print(f"Palette Quantities: {self.paletteQuantity}")
+
     def getState(self):
         return self.line, self.agentPosition, self.savings
 
@@ -20,6 +32,7 @@ class coloringNinja():
         goal = ["uncolored"] * self.size
         for pos in range(self.size):
             goal[pos] = self.getColorForPosition(pos)
+            
         return tuple(goal)
 
     def getColorForPosition(self, pos):
@@ -44,25 +57,24 @@ class coloringNinja():
         # Only try to color if the cell is uncolored
         if self.line[self.agentPosition] == "uncolored":
             color = self.getColorForPosition(self.agentPosition)
-            
-            # Debugging print to show the current color attempt
-            print(f"Coloring position {self.agentPosition} with {color}")  
-            
-            if self.paletteQuantity[color] > 0:  # Can color normally
+            print(f"Attempting to color position {self.agentPosition} with {color}")
+
+            if self.paletteQuantity[color] > 0:  # Coloring is possible
                 self.line[self.agentPosition] = color
                 self.paletteQuantity[color] -= 1
                 self.savings += self.points
-            else:  # Refilling the palette if the agent doesn't have enough savings
+            else:  # Attempt refill if savings allow
                 if self.savings >= self.paletteCost:
                     self.savings -= self.paletteCost
-                    self.paletteQuantity[color] = 5  # Refill palette
+                    self.paletteQuantity[color] = 2 # Refill palette
                     self.line[self.agentPosition] = color
                     self.paletteQuantity[color] -= 1
                     self.savings += self.points
-                else:
-                    print(f"Not enough savings to color cell at position {self.agentPosition}")
-        return self.line
-
+                else:  # Mark as skipped if coloring fails
+                    print(f"Skipped cell at {self.agentPosition} due to insufficient resources.")
+                    return False  # Skipped
+            return True  # Colored successfully
+        return None  # Already colored
 
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
@@ -79,25 +91,25 @@ class coloringNinja():
 
     def getActions(self, direction):
         actions = []
-        while self.agentPosition < len(self.line) and "uncolored" in self.line:
-            self.colorCells()
-            color = self.line[self.agentPosition]
-            if color != "uncolored":  # coloring successful
+        skipped_positions = []
+
+        while "uncolored" in self.line:
+            success = self.colorCells()
+            if success:
+                color = self.line[self.agentPosition]
                 actions.append(("color", color))
-            else:
-                print(f"Skipping cell at {self.agentPosition} - No coloring done")
+            elif success is False:  # Mark skipped cell
+                skipped_positions.append(self.agentPosition)
+                actions.append(("skipped", self.agentPosition))
 
             # Move the agent based on the direction
-            success = self.moveAgent(direction)
-            if success:
-                actions.append(("moved", direction))
-            else:
-                actions.append(("invalid move", direction))
-            
-            # If the agent reaches the end of the line and there are uncolored cells, loop back to the beginning
-            if self.agentPosition == len(self.line) - 1 and "uncolored" in self.line:
-                print("End of line reached. Looping back to the start.")
-                self.agentPosition = 0
+            if not self.moveAgent(direction):
+                if skipped_positions:  # Revisit skipped positions
+                    self.agentPosition = skipped_positions.pop(0)
+                    print(f"Revisiting skipped cell at position {self.agentPosition}.")
+                    continue
+                else:  # End of line handling
+                    break
 
         return actions
 
