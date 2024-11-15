@@ -1,5 +1,5 @@
 class coloringNinja():
-    def __init__(self, lineSize=16, paletteCost=3, points=1, paletteQuantitiy=2):
+    def __init__(self, lineSize=6, paletteCost=3, points=1, paletteQuantitiy=2):
         self.size = lineSize
         self.colorList = ["🍓", "🐳", "🐸", "🌸"]
         self.paletteCost = paletteCost
@@ -79,7 +79,7 @@ class coloringNinja():
 
     def getActions(self, direction):
         actions = []
-        while self.agentPosition < len(self.line) or "uncolored" in self.line:
+        while self.agentPosition < len(self.line) and "uncolored" in self.line:
             self.colorCells()
             color = self.line[self.agentPosition]
             if color != "uncolored":  # coloring successful
