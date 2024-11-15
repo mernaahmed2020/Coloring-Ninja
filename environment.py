@@ -40,23 +40,33 @@ class coloringNinja():
         print("Goal state:", self.goalState)
 
     def colorCells(self):
+        # Only try to color if the cell is uncolored
         if self.line[self.agentPosition] == "uncolored":
             color = self.getColorForPosition(self.agentPosition)
-            print(f"Coloring position {self.agentPosition} with {color}")  #debugging 
-            if self.paletteQuantity[color] > 0:
+            
+            # Debugging print to show the current color attempt
+            print(f"Coloring position {self.agentPosition} with {color}")  
+
+            # If the agent doesn't have the color in the palette, check if they can buy it
+            if self.paletteQuantity[color] == 0:
+                print(f"Skipping {color} at position {self.agentPosition} - No palette available")
+                return self.line
+            
+            if self.paletteQuantity[color] > 0:  # Can color normally
                 self.line[self.agentPosition] = color
                 self.paletteQuantity[color] -= 1
                 self.savings += self.points
-            else:
+            else:  # Refilling the palette if the agent doesn't have enough savings
                 if self.savings >= self.paletteCost:
                     self.savings -= self.paletteCost
-                    self.paletteQuantity[color] = 5  # refill palette
+                    self.paletteQuantity[color] = 5  # Refill palette
                     self.line[self.agentPosition] = color
                     self.paletteQuantity[color] -= 1
                     self.savings += self.points
                 else:
                     print(f"Not enough savings to color cell at position {self.agentPosition}")
         return self.line
+
 
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
@@ -73,89 +83,24 @@ class coloringNinja():
 
     def getActions(self, direction):
         actions = []
-        if self.line[self.agentPosition] == "uncolored":
-            self.colorCells() 
-            color = self.line[self.agentPosition]
-            if color != "uncolored":  #coloring successful
-                actions.append(("color", color))
+        while self.agentPosition < len(self.line):
+            
+            if self.line[self.agentPosition] == "uncolored":
+                self.colorCells() 
+                color = self.line[self.agentPosition]
+                if color != "uncolored":  #coloring successful
+                    actions.append(("color", color))
+                else:
+                    print(f"Skipping cell at {self.agentPosition} - No coloring done")
+        
+            success = self.moveAgent(direction)
+            if success:
+                actions.append(("moved", direction))
             else:
-                print(f"Skipping cell at {self.agentPosition} - No coloring done")
+                actions.append(("invalid move", direction))
+
+            return actions
     
-        success = self.moveAgent(direction)
-        if success:
-            actions.append(("moved", direction))
-        else:
-            actions.append(("invalid move", direction))
-
-        return actions
     
-# Test 1: Low Palette Quantity, High Palette Cost, Low Savings
-print("Test 1: Low Palette Quantity, High Palette Cost, Low Savings")
-env1 = coloringNinja(paletteQuantitiy=1, paletteCost=5, points=1)
-env1.savings = 1  # Low savings to test behavior
-print("\nInitial State:")
-print("Line:", env1.line)
-print("Agent Position:", env1.agentPosition)
-print("Savings:", env1.savings)
-print("Goal state:", env1.goalState)
-env1.getActions("right")  # Try to color and move
-print("\nFinal state:")
-print("Line:", env1.line)
-print("Agent Position:", env1.agentPosition)
-print("Savings:", env1.savings)
-
-# Test 2: High Palette Quantity, Low Palette Cost, High Savings
-print("\nTest 2: High Palette Quantity, Low Palette Cost, High Savings")
-env2 = coloringNinja(paletteQuantitiy=5, paletteCost=1, points=1)
-env2.savings = 10  # High savings
-print("\nInitial State:")
-print("Line:", env2.line)
-print("Agent Position:", env2.agentPosition)
-print("Savings:", env2.savings)
-env2.getActions("right")  # Try to color and move
-print("\nFinal state:")
-print("Line:", env2.line)
-print("Agent Position:", env2.agentPosition)
-print("Savings:", env2.savings)
-
-# Test 3: No Palette Quantity, No Savings
-print("\nTest 3: No Palette Quantity, No Savings")
-env3 = coloringNinja(paletteQuantitiy=0, paletteCost=3, points=1)
-env3.savings = 0  # No savings
-print("\nInitial State:")
-print("Line:", env3.line)
-print("Agent Position:", env3.agentPosition)
-print("Savings:", env3.savings)
-env3.getActions("right")  # Try to color and move
-print("\nFinal state:")
-print("Line:", env3.line)
-print("Agent Position:", env3.agentPosition)
-print("Savings:", env3.savings)
-
-# Test 4: High Palette Quantity, Zero Palette Cost, High Savings
-print("\nTest 4: High Palette Quantity, Zero Palette Cost, High Savings")
-env4 = coloringNinja(paletteQuantitiy=5, paletteCost=0, points=1)
-env4.savings = 10  # High savings, no cost
-print("\nInitial State:")
-print("Line:", env4.line)
-print("Agent Position:", env4.agentPosition)
-print("Savings:", env4.savings)
-env4.getActions("right")  # Try to color and move
-print("\nFinal state:")
-print("Line:", env4.line)
-print("Agent Position:", env4.agentPosition)
-print("Savings:", env4.savings)
-
-# Test 5: Low Palette Quantity, Moderate Palette Cost, High Savings
-print("\nTest 5: Low Palette Quantity, Moderate Palette Cost, High Savings")
-env5 = coloringNinja(paletteQuantitiy=2, paletteCost=3, points=1)
-env5.savings = 5  # High savings
-print("\nInitial State:")
-print("Line:", env5.line)
-print("Agent Position:", env5.agentPosition)
-print("Savings:", env5.savings)
-env5.getActions("right")  # Try to color and move
-print("\nFinal state:")
-print("Line:", env5.line)
-print("Agent Position:", env5.agentPosition)
-print("Savings:", env5.savings)
+ninja = coloringNinja()
+ninja.printGoalState()
