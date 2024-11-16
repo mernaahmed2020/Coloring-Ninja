@@ -4,18 +4,20 @@ from Node import Node
 from copy import deepcopy
 from Heuristic import Heuristic
 
-def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
- 
+def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=True):
+    """
+    Implements Greedy Best-First Search (GBFS) for the coloringNinja environment and returns the solution.
+    The heuristic function (h) is used to estimate the distance to the goal.
+    """
     root = Node.root(environment)  # Initialize with full state, including palette and savings.
 
     # Check if the root node meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
         return {"actions": [], "total_cost": 0, "max_frontier": 1}
 
-    # Priority Queue for A* (min-heap) to prioritize nodes based on the f(n) value
+    # Priority Queue for GBFS (min-heap) to prioritize nodes based on the heuristic value
     frontier = PriorityQueue()
-    f_value = root.path_cost + heuristic.calculate(root, heuristic_type)  # f(n) = g(n) + h(n)
-    frontier.put((f_value, root))  # Insert the root node with its f(n) value
+    frontier.put((heuristic.calculate(root, heuristic_type), root))  # f(n) = h(n)
     explored = set()  # Track explored states
     max_frontier_size = 1  # Track the maximum frontier size
 
@@ -23,8 +25,8 @@ def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
         return any(state == item[1].state for item in frontier.queue)
 
     while not frontier.empty():
-        # Pop the node with the lowest f(n) value from the frontier
-        current_f_value, node = frontier.get()
+        # Pop the node with the lowest heuristic value from the frontier
+        _, node = frontier.get()
         node_state_tuple = tuple(node.state)
         explored.add(node_state_tuple)  # Add the current state to the explored set
 
@@ -76,9 +78,8 @@ def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
                             "max_frontier": max_frontier_size,
                         }
 
-                # Calculate the f(n) value for the child node
-                new_f_value = child.path_cost + heuristic.calculate(child, heuristic_type)
-                frontier.put((new_f_value, child))
+                # Add the child to the frontier with its heuristic value
+                frontier.put((heuristic.calculate(child, heuristic_type), child))
 
         # Update the maximum frontier size
         max_frontier_size = max(max_frontier_size, frontier.qsize())  # Track the max size of frontier

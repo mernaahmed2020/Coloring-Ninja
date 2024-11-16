@@ -47,8 +47,7 @@ class coloringNinja():
         return "🌸"
 
     def isGoal(self):
-        if self.line == self.goalState:
-            print("goal raeched")
+         return self.line == self.goalState
 
     def printGoalState(self):
         print("Goal state:", self.goalState)
@@ -88,10 +87,13 @@ class coloringNinja():
         else:
             print("Invalid move")
             return False
+        
 
     def getActions(self, direction):
         actions = []
         skipped_positions = []
+        print(f"Generating actions from state: {self.line}, agentPosition: {self.agentPosition}, palette: {self.paletteQuantity}")
+
 
         while "uncolored" in self.line:
             success = self.colorCells()
@@ -101,6 +103,7 @@ class coloringNinja():
             elif success is False:  # Mark skipped cell
                 skipped_positions.append(self.agentPosition)
                 actions.append(("skipped", self.agentPosition))
+                print(f"Invalid move at position {self.agentPosition}, skipped.")
 
             # Move the agent based on the direction
             if not self.moveAgent(direction):
