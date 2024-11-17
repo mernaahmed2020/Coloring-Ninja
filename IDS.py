@@ -3,37 +3,32 @@ import matplotlib.pyplot as plt
 from environment import coloringNinja
 from Node import Node
 
-def draw_search_tree(G):
-    """
-    Draw the search tree using a spectral layout.
-    """
-    pos = nx.spectral_layout(G)  # Using the spectral layout for node positioning
-    plt.figure(figsize=(12, 8))
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="pink", font_size=10, font_weight="bold", edge_color="gray")
-    edge_labels = nx.get_edge_attributes(G, 'action')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.title("Search Tree")
-    plt.show()
+# def draw_search_tree(G):
+#     pos = nx.spectral_layout(G)  # Using the spectral layout for node positioning
+#     plt.figure(figsize=(12, 8))
+#     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="pink", font_size=10, font_weight="bold", edge_color="gray")
+#     edge_labels = nx.get_edge_attributes(G, 'action')
+#     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+#     plt.title("Search Tree")
+#     plt.show()
 
 def iterative_deepening_search(environment, max_depth=float('inf'), verbose=False):
     """
     Implements IDS for the coloringNinja environment using the Node class.
     """
     if max_depth == float('inf'):
-        max_depth = 50  # Default maximum depth if not specified
+        max_depth = 50 
     
-    # Initialize the search tree graph
-    G = nx.DiGraph()  # Directed graph for search tree
+   
+    # G = nx.DiGraph()  # Directed graph for search tree
     
-    for depth_limit in range(1, max_depth + 1):  # Increment depth limit from 1 to max_depth
+    for depth_limit in range(1, max_depth + 1):  
         if verbose:
             print(f"Depth limit: {depth_limit}")
         
-        result, explored, max_frontier = depth_limited_search(environment, depth_limit, verbose, G)
+        result, explored, max_frontier = depth_limited_search(environment, depth_limit, verbose)
         if result is not None:
             actions, total_steps = result
-            # Draw the search tree after finding the solution
-            draw_search_tree(G)
             return {
                 "goal_state": environment.goalState,
                 "actions": result[0],
@@ -42,7 +37,7 @@ def iterative_deepening_search(environment, max_depth=float('inf'), verbose=Fals
                 "depth_limit_reached": depth_limit,
             }
     
-    # No solution found within the depth limit
+  
     return {
         "goal_state": None,
         "actions": None,
@@ -53,33 +48,29 @@ def iterative_deepening_search(environment, max_depth=float('inf'), verbose=Fals
 
 
 def depth_limited_search(environment, depth_limit, verbose=False, G=None):
-    """
-    Performs a depth-limited search (DFS with depth limit) on the coloringNinja environment.
-    """
-    root = Node.root(environment)  # Get the initial state including palette
+    root = Node.root(environment) 
 
     if root.state[:len(environment.line)] == environment.goalState:
-        return solution(root), 1, 1  # Solution found at the root, frontier size is 1
+        return solution(root), 1, 1
 
-    frontier = [(root, 0)]  # Stack with (node, depth)
-    explored = set()  # Track explored states
-    max_frontier = len(frontier)  # Track maximum frontier size
+    frontier = [(root, 0)]  
+    explored = set() 
+    max_frontier = len(frontier)  
 
     if verbose:
         print(f"Initial Frontier: {[node.state for node, _ in frontier]}")
 
     while frontier:
-        node, depth = frontier.pop()  # Pop the last node and its depth
+        node, depth = frontier.pop()
         
         if depth > depth_limit:
-            continue  # Skip nodes deeper than the depth limit
+            continue  
 
-        explored.add(tuple(node.state))  # Add state to explored set
-
-        # Add the current node and its state to the graph G
-        G.add_node(tuple(node.state))
-        if node.parent:
-            G.add_edge(tuple(node.parent.state), tuple(node.state), action=node.action)
+        explored.add(tuple(node.state))  
+       
+        # G.add_node(tuple(node.state))
+        # if node.parent:
+        #     G.add_edge(tuple(node.parent.state), tuple(node.state), action=node.action)
 
         for action in ["color", "move left", "move right"]:
             child = Node.child(environment, node, action)
@@ -97,7 +88,7 @@ def depth_limited_search(environment, depth_limit, verbose=False, G=None):
             print(f"Frontier: {[node.state for node, _ in frontier]}") 
             print(f"Explored: {len(explored)} states")
 
-    return None, len(explored), max_frontier  # No solution found
+    return None, len(explored), max_frontier  
 
 def solution(node):
     """
@@ -110,7 +101,7 @@ def solution(node):
         actions.append(current_node.action)
         current_node = current_node.parent
     
-    actions.reverse()  # Reverse the list to show actions from root to goal
+    actions.reverse()  
     total_steps = len(actions)
     return actions, total_steps
 # environment = coloringNinja(lineSize=2)

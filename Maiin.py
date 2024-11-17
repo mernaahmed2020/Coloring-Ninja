@@ -7,14 +7,17 @@ from UCS import uniform_cost_search
 from Heuristic import Heuristic
 from Greedy import greedy_best_first_search
 from Astar import a_star_search
-from compare import print_comparison_table, measure_performance
+from HillClimbing import *
+from simAnealing import *
 from search_algorithm import *
 import time
 import psutil
 import os
 
 #======================== run ================================
-
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / 1024 / 1024  
 
 algorithms = [("DFS", run_dfs_algorithm), ("BFS", run_bfs_algorithm),("IDS", run_ids_algorithm),("UCS",run_ucs_algorithm),("Greedy with H1",run_greedy_algorithm1),("Greedy with H2",run_greedy_algorithm2),("A*1",run_a_star1),("A*2",run_a_star2)]
 algorithm_results=[]
@@ -61,28 +64,32 @@ def print_algorithm_summary(algorithm_results):
         print(f"{result['name']} time: {result['time']:.3f} sec")
         print(f"{result['name']} memory_used: {result['memory_used']:.2f} MB")
         
-        total_cost = result.get("total_cost", "N/A")  # Handle missing cost with a default value
-        print(f"Total Cost: {total_cost}")  # This will handle missing total_cost properly
+        total_cost = result.get("total_cost", "N/A")  
+        print(f"Total Cost: {total_cost}")  
 
             
         print("==============================================================================================")
         
 print_algorithm_summary(algorithm_results) 
 
+print("==============================================================================================")
+
+environment_Hill = coloringNinja(lineSize=6)
+
+before_memory = get_memory_usage()
+result =hill_climbing(environment_Hill)
+
+after_memory = get_memory_usage()  
+memory_used = after_memory - before_memory
+
+print(f"Hill climbing memory usage: {memory_used:.5f} MB")
+ 
+
+print("==============================================================================================")
 
 
-# performance_data = {}
-# if dfs_result is not None:
-#         # dfs_performance = measure_performance(depth_first_graph_search, ninja_env_dfs, verbose=True)
-#         performance_data['DFS'] = dfs_performance
 
-#     #  print_comparison_table(performance_data)
-# if result["actions"] is not None:
-#     print("Solution found!")
-#     print("Actions:", result["actions"])
-  
-# else:
-#     print("No solution found.")
-# print("Maximum Frontier Size:", result["max_frontier"])
+
+
 
   

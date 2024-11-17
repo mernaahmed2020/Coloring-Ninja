@@ -13,20 +13,18 @@ from Heuristic import *
 
 def get_memory_usage():
     process = psutil.Process(os.getpid())
-    return process.memory_info().rss / 1024 / 1024  # Returns memory in MB
+    return process.memory_info().rss / 1024 / 1024  
 
 
 
 
 def run_ids_algorithm():
-    """
-    Runs the IDS (Iterative Deepening Search) algorithm and returns results.
-    """
-    # Set up the environment for IDS
-    ninja_env = coloringNinja(lineSize=6)  # Adjust lineSize as needed
+   
 
-    # Run IDS (Iterative Deepening Search)
-    print("\nRunning IDS (Iterative Deepening Search)...")
+    ninja_env = coloringNinja(lineSize=6) 
+
+   
+    print("\nRun IDS ")
     
     before_memory = get_memory_usage()
     start_time = time.time()
@@ -39,23 +37,17 @@ def run_ids_algorithm():
     
     if ids_result is not None:
         print("IDS Solution found!")
-        print("Actions:", ids_result.get("actions"))  # Safely get 'actions'
-        print("Goal State:", ids_result.get("goal_state"))  # Safely get 'goal_state'
-        print("Max Frontier Size:", ids_result.get("max_frontier"))  # Safely get 'max_frontier'
+        print("Actions:", ids_result.get("actions"))
+        print("Goal State:", ids_result.get("goal_state"))  
+        print("Max Frontier Size:", ids_result.get("max_frontier")) 
     else:
         print("IDS No solution found.")
 
     return ids_result,elapsed_time,memory_used
 
 def run_bfs_algorithm():
-    """
-    Runs the BFS (Breadth-First Search) algorithm and returns results.
-    """
-    # Set up the environment for BFS
-    ninja_env = coloringNinja(lineSize=6)  # Adjust lineSize as needed
-
-    # Run BFS (Breadth-First Search)
-    print("\nRunning BFS (Breadth-First Search)...")
+    ninja_env = coloringNinja(lineSize=6)  
+    print("\nRun BFS")
     before_memory = get_memory_usage()
     start_time = time.time()    
     bfs_result = breadth_first_graph_search(ninja_env, verbose=False)
@@ -65,23 +57,21 @@ def run_bfs_algorithm():
 
     if bfs_result is not None:
         print("BFS Solution found!")
-        print("Actions:", bfs_result.get("actions"))  # Safely get 'actions'
-        print("Goal State:", bfs_result.get("goal_state"))  # Safely get 'goal_state'
-        print("Max Frontier Size:", bfs_result.get("max_frontier"))  # Safely get 'max_frontier'
+        print("Actions:", bfs_result.get("actions")) 
+        print("Goal State:", bfs_result.get("goal_state")) 
+        print("Max Frontier Size:", bfs_result.get("max_frontier")) 
     else:
         print("BFS No solution found.")
 
     return bfs_result,elapsed_time,memory_used
 
 def run_dfs_algorithm():
-    """
-    Runs the DFS (Depth-First Search) algorithm and returns results.
-    """
-    # Set up the environment for DFS
-    ninja_env = coloringNinja(lineSize=6)  # Adjust lineSize as needed
+ 
+   
+    ninja_env = coloringNinja(lineSize=6) 
 
-    # Run DFS (Depth-First Search)
-    print("\nRunning DFS (Depth-First Search)...")
+    
+    print("\nRun DFS ")
     
     before_memory = get_memory_usage()
     start_time = time.time()   
@@ -92,9 +82,9 @@ def run_dfs_algorithm():
 
     if dfs_result is not None:
         print("DFS Solution found!")
-        print("Actions:", dfs_result.get("actions"))  # Safely get 'actions'
-        print("Goal State:", dfs_result.get("goal_state"))  # Safely get 'goal_state'
-        print("Max Frontier Size:", dfs_result.get("max_frontier"))  # Safely get 'max_frontier'
+        print("Actions:", dfs_result.get("actions"))  
+        print("Goal State:", dfs_result.get("goal_state")) 
+        print("Max Frontier Size:", dfs_result.get("max_frontier")) 
     else:
         print("DFS No solution found.")
 
@@ -103,14 +93,10 @@ def run_dfs_algorithm():
 
 
 def run_ucs_algorithm():
-    """
-    Runs the UCS (Uniform Cost Search) algorithm and returns results.
-    """
-    # Set up the environment for UCS
-    ninja_env = coloringNinja(lineSize=6)  # Adjust lineSize as needed
-
-    # Run UCS (Uniform Cost Search)
-    print("\nRunning UCS (Uniform Cost Search)...")
+   
+  
+    ninja_env = coloringNinja(lineSize=6) 
+    print("\nRun UCS ")
     before_memory = get_memory_usage()
     start_time = time.time()   
     ucs_result = uniform_cost_search(ninja_env, verbose=False)
@@ -122,10 +108,10 @@ def run_ucs_algorithm():
 
     if isinstance(ucs_result, dict): 
         print("UCS Solution found!")
-        print("Actions:", ucs_result.get("actions"))  # Safely get 'actions'
+        print("Actions:", ucs_result.get("actions")) 
         print("Total cost:", ucs_result.get("total_cost"))   
-        print("Goal State:", ucs_result.get("goal_state"))  # Safely get 'goal_state'
-        print("Max Frontier Size:", ucs_result.get("max_frontier"))  # Safely get 'max_frontier'
+        print("Goal State:", ucs_result.get("goal_state")) 
+        print("Max Frontier Size:", ucs_result.get("max_frontier"))  
     else:
         print("UCS No solution found.")
     
@@ -141,15 +127,12 @@ def run_ucs_algorithm():
 
 
 def run_a_star1():
-    """
-    Runs the A* algorithm with Heuristic 1 and returns results along with performance metrics.
-    """
-    # Set up the environment for A* with Heuristic 1
-    ninja_env1 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
+    
+   
+    ninja_env1 = coloringNinja(lineSize=6)  
     heuristic1 = Heuristic(ninja_env1)
 
-    # Measure memory usage and time for A* with Heuristic 1
-    print("\nRunning A* with Heuristic 1...")
+    print("\nRun A* with Heuristic 1")
     before_memory1 = get_memory_usage()
     start_time1 = time.time()
 
@@ -159,7 +142,7 @@ def run_a_star1():
     after_memory1 = get_memory_usage()  
     memory_used1 = after_memory1 - before_memory1
 
-    # Display results for A* with Heuristic 1
+  
     if result_a_star1['actions'] is None:
         print("A* Heuristic 1 - No solution found.")
     else:
@@ -175,15 +158,12 @@ def run_a_star1():
 
 
 def run_a_star2():
-    """
-    Runs the A* algorithm with Heuristic 2 and returns results along with performance metrics.
-    """
-    # Set up the environment for A* with Heuristic 2
-    ninja_env2 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
+
+   
+    ninja_env2 = coloringNinja(lineSize=6) 
     heuristic2 = Heuristic(ninja_env2)
 
-    # Measure memory usage and time for A* with Heuristic 2
-    print("\nRunning A* with Heuristic 2...")
+    print("\nRun A* with Heuristic 2")
     before_memory2 = get_memory_usage()
     start_time2 = time.time()
 
@@ -192,8 +172,6 @@ def run_a_star2():
     elapsed_time2 = time.time() - start_time2
     after_memory2 = get_memory_usage()  
     memory_used2 = after_memory2 - before_memory2
-
-    # Display results for A* with Heuristic 2
     if result_a_star2['actions'] is None:
         print("A* Heuristic 2 - No solution found.")
     else:
@@ -211,10 +189,10 @@ def run_greedy_algorithm1():
     """
     Runs the Greedy algorithm with Heuristic 1 and returns results along with performance metrics.
     """
-    ninja_env1 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
+    ninja_env1 = coloringNinja(lineSize=6) 
     heuristic1 = Heuristic(ninja_env1)
 
-    print("\nRunning Greedy with Heuristic 1...")
+    print("\nRun Greedy with Heuristic 1")
     before_memory = get_memory_usage()
     start_time = time.time()
 
@@ -239,13 +217,10 @@ def run_greedy_algorithm1():
 
 
 def run_greedy_algorithm2():
-    """
-    Runs the Greedy algorithm with Heuristic 2 and returns results along with performance metrics.
-    """
     ninja_env2 = coloringNinja(lineSize=6)  
     heuristic2 = Heuristic(ninja_env2)
 
-    print("\nRunning Greedy with Heuristic 2...")
+    print("\nRun Greedy with Heuristic 2.")
     before_memory = get_memory_usage()
     start_time = time.time()
 
