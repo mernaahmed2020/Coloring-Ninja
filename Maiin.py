@@ -12,18 +12,10 @@ from search_algorithm import *
 import time
 import psutil
 import os
-from visualizer import SearchTreeVisualizer
+
 #======================== run ================================
 
 
-
-
-
-
-# ninja_env_bfs = coloringNinja(lineSize=6)
-# ninja_env_dfs = coloringNinja(lineSize=6)
-# resultBfs = depth_first_graph_search(ninja_env_bfs, verbose=True)
-# resultDfs = depth_first_graph_search(ninja_env_dfs, verbose=True)
 algorithms = [("DFS", run_dfs_algorithm), ("BFS", run_bfs_algorithm),("IDS", run_ids_algorithm),("UCS",run_ucs_algorithm),("Greedy with H1",run_greedy_algorithm1),("Greedy with H2",run_greedy_algorithm2),("A*1",run_a_star1),("A*2",run_a_star2)]
 algorithm_results=[]
 for name, algorithm in algorithms:
@@ -54,10 +46,6 @@ for name, algorithm in algorithms:
             "total_cost":total_cost
         })
         
-        ninja_env = coloringNinja(lineSize=6)  # This should match your environment setup
-        visualizer = SearchTreeVisualizer(ninja_env, goal_state=goal_state)
-        visualizer.visualize_search_tree()
-                
         
     else:
        print(f"{name} found no solution.")

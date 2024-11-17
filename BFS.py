@@ -1,13 +1,29 @@
+import networkx as nx
+import matplotlib.pyplot as plt
 from collections import deque
 from environment import coloringNinja
 from Node import Node
 
+def draw_search_tree(G):
+    """
+    Draw the search tree using a spectral layout.
+    """
+    pos = nx.spectral_layout(G)  # Using the spectral layout for node positioning
+    plt.figure(figsize=(12, 8))
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="pink", font_size=10, font_weight="bold", edge_color="gray")
+    edge_labels = nx.get_edge_attributes(G, 'action')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    plt.title("Search Tree")
+    plt.show()
 
 def breadth_first_graph_search(environment, verbose=False):
     """
     Implements BFS for the coloringNinja environment and returns the solution.
     """
     root = Node.root(environment)  # Initialize with full state, including palette and savings.
+
+    # Initialize the search tree graph
+    G = nx.DiGraph()  # Directed graph for search tree
 
     # Check if the root node meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
@@ -24,6 +40,11 @@ def breadth_first_graph_search(environment, verbose=False):
         node = frontier.popleft()  # Dequeue the first node
         explored.add(tuple(node.state))  # Add the current state to the explored set
 
+        # Add the current node and its state to the graph G
+        G.add_node(tuple(node.state))
+        if node.parent:
+            G.add_edge(tuple(node.parent.state), tuple(node.state), action=node.action)
+
         # Update the environment state from the current node
         environment.line = list(node.state[:len(environment.line)])
         environment.agentPosition = node.state[len(environment.line)]
@@ -38,13 +59,12 @@ def breadth_first_graph_search(environment, verbose=False):
         for color in environment.paletteQuantity:
             if environment.paletteQuantity[color] == 0 and environment.savings >= environment.paletteCost:  # Palette cost is environment.paletteCost
                 # Update palette quantity to 2 if savings are enough
-                environment.paletteQuantity[color] =2
+                environment.paletteQuantity[color] = 2
                 environment.savings -= environment.paletteCost  # Deduct the palette cost from savings
                 print(f"Purchased {color} palette, new palette quantities: {environment.paletteQuantity}")
         
         # Update points and savings
         points = environment.points  # Assuming you update points based on the agent's actions
-        
         print(f"Updated Points: {points}, Savings: {environment.savings}")
         
         # Expand the node by iterating over possible actions
@@ -64,6 +84,10 @@ def breadth_first_graph_search(environment, verbose=False):
                     
                     # Extract the solution (actions and cost)
                     actions, total_steps = solution(child)
+
+                    # Draw the search tree after finding the solution
+                    draw_search_tree(G)
+
                     return {
                         "goal_state": child.state[:len(environment.line)],
                         "actions": actions,
@@ -80,6 +104,7 @@ def breadth_first_graph_search(environment, verbose=False):
         if verbose:
             print(f"Frontier: {[node.state for node in frontier]}")
 
+    # Return when no solution is found
     return {"actions": None, "total_cost": None, "max_frontier": max_frontier_size}
 
 def solution(node):
@@ -87,14 +112,19 @@ def solution(node):
     Constructs the path of actions and calculates the total cost from the root to the goal state.
     """
     actions = []  # To store the sequence of actions
-     # Initialize total cost
 
     # Traverse back to the root from the goal node
     while node.parent is not None:
         actions.append(node.action)  # Append the action leading to this node
-        # Accumulate the path cost
         node = node.parent
 
     actions.reverse()  # Reverse to get the correct order
     total_steps = len(actions)
     return actions, total_steps
+
+
+# Example usage
+# environment = coloringNinja(lineSize=2)
+# result = breadth_first_graph_search(environment, verbose=True)
+
+# Note: The search tree will be drawn after finding a solution, or when the search ends.

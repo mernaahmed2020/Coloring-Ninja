@@ -1,6 +1,20 @@
+import networkx as nx
+import matplotlib.pyplot as plt
 from collections import deque
 from environment import coloringNinja
 from Node import Node
+
+def draw_search_tree(G):
+    """
+    Draw the search tree using a spectral layout.
+    """
+    pos = nx.spectral_layout(G)  # Using the spectral layout for node positioning
+    plt.figure(figsize=(12, 8))
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="pink", font_size=10, font_weight="bold", edge_color="gray")
+    edge_labels = nx.get_edge_attributes(G, 'action')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    plt.title("Search Tree")
+    plt.show()
 
 def depth_first_graph_search(environment, verbose=False):
     """
@@ -8,11 +22,13 @@ def depth_first_graph_search(environment, verbose=False):
     """
     root = Node.root(environment)  # Initialize with full state, including palette and savings.
 
+    # Initialize the search tree graph
+    G = nx.DiGraph()  # Directed graph for search tree
+
     # Check if the root node meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
         return {"goal_state": root.state[:len(environment.line)], "actions": [], "total_steps": 0, "max_frontier": 1}
-    
-    
+
     frontier = [root]  # Initialize the frontier with a stack
     explored = set()  # Track explored states
     max_frontier_size = 1  # Track the maximum frontier size
@@ -23,6 +39,11 @@ def depth_first_graph_search(environment, verbose=False):
     while frontier:
         node = frontier.pop()  # Pop the last node (LIFO)
         explored.add(tuple(node.state))  # Add the current state to the explored set
+
+        # Add the current node and its state to the graph G
+        G.add_node(tuple(node.state))
+        if node.parent:
+            G.add_edge(tuple(node.parent.state), tuple(node.state), action=node.action)
 
         # Update the environment state from the current node
         environment.line = list(node.state[:len(environment.line)])
@@ -64,6 +85,9 @@ def depth_first_graph_search(environment, verbose=False):
                     # Extract the solution (actions and cost)
                     actions, total_steps = solution(child)
 
+                    # Draw the search tree after finding the solution
+                    draw_search_tree(G)
+
                     # Return the result including the goal state
                     return {
                         "goal_state": child.state[:len(environment.line)],  # Add the goal state here
@@ -89,14 +113,19 @@ def solution(node):
     Constructs the path of actions and calculates the total cost from the root to the goal state.
     """
     actions = []  # To store the sequence of actions
-     # Initialize total cost
 
     # Traverse back to the root from the goal node
     while node.parent is not None:
         actions.append(node.action)  # Append the action leading to this node
-        # Accumulate the path cost
         node = node.parent
 
     actions.reverse()  # Reverse to get the correct order
     total_steps = len(actions)
     return actions, total_steps
+
+
+# Example usage
+# environment = coloringNinja(lineSize=3)
+# result = depth_first_graph_search(environment, verbose=True)
+
+# Note: The search tree will be drawn after finding a solution, or when the search ends.

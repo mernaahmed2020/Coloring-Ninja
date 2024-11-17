@@ -123,14 +123,12 @@ def solution(node):
 
 def draw_search_tree(G):
     # Draw the search tree using matplotlib
-    pos = nx.nx_agraph.graphviz_layout(G, prog="dot") # You can adjust the layout here
+    pos = nx.spectral_layout(G)  # You can adjust the layout here
     plt.figure(figsize=(12, 8))
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", edge_color="gray")
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="pink", font_size=10, font_weight="bold", edge_color="gray")
     edge_labels = nx.get_edge_attributes(G, 'action')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
     plt.title("Search Tree")
     plt.show()
 
-# Initialize the environment and call UCS
-environment = coloringNinja(lineSize=6)
-result = uniform_cost_search(environment, verbose=True)
+
