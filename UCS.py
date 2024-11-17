@@ -2,6 +2,8 @@ from queue import PriorityQueue
 from environment import coloringNinja
 from Node import Node
 from copy import deepcopy
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def uniform_cost_search(environment, verbose=True):
 
@@ -17,6 +19,9 @@ def uniform_cost_search(environment, verbose=True):
     explored = set()  # Track explored states
     frontier_states = set()  # Track states in the frontier
     max_frontier_size = 1  # Track the maximum frontier size
+
+    # Create a graph to visualize the search tree
+    G = nx.DiGraph()
 
     def is_in_frontier(state):
         # Efficient lookup in frontier states set
@@ -47,10 +52,10 @@ def uniform_cost_search(environment, verbose=True):
                 environment.savings -= environment.paletteCost  # Deduct the palette cost from savings
                 if verbose:
                     print(f"Purchased {color} palette, new palette quantities: {environment.paletteQuantity}")
-        
+
         # Update points and savings
         points = environment.points  # Assuming you update points based on the agent's actions
-        
+
         if verbose:
             print(f"Updated Points: {points}, Savings: {environment.savings}")
 
@@ -76,6 +81,9 @@ def uniform_cost_search(environment, verbose=True):
                         print(f"Total Cost: {total_cost}")
                         print(f"Max Frontier Size: {max_frontier_size}")
 
+                        # Visualize the search tree after goal state is found
+                        draw_search_tree(G)
+
                         return {
                             "actions": actions,
                             "total_cost": total_cost,
@@ -88,10 +96,14 @@ def uniform_cost_search(environment, verbose=True):
                 frontier.put((new_cost, child))
                 frontier_states.add(child_state_tuple)  # Add state to frontier set
 
+                # Add the node and its child to the graph
+                G.add_edge(tuple(node.state), tuple(child.state), action=action)
+
         # Update the maximum frontier size
         max_frontier_size = max(max_frontier_size, frontier.qsize())  # Track the max size of frontier
 
     # Return failure if no solution is found
+    draw_search_tree(G)
     return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size}
 
 def solution(node):
@@ -104,11 +116,21 @@ def solution(node):
         node = node.parent
 
     actions.reverse()
-    
-    # Ensure we return a valid tuple
+
     if actions and total_cost >= 0:
         return actions, total_cost
-    return None  # Return None if the solution is invalid or empty
+    return None
 
+def draw_search_tree(G):
+    # Draw the search tree using matplotlib
+    pos = nx.nx_agraph.graphviz_layout(G, prog="dot") # You can adjust the layout here
+    plt.figure(figsize=(12, 8))
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", edge_color="gray")
+    edge_labels = nx.get_edge_attributes(G, 'action')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    plt.title("Search Tree")
+    plt.show()
+
+# Initialize the environment and call UCS
 environment = coloringNinja(lineSize=6)
 result = uniform_cost_search(environment, verbose=True)

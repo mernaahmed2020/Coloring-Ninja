@@ -1,32 +1,34 @@
-from queue import PriorityQueue
+from heapq import heappop, heappush
+from copy import deepcopy
 from environment import coloringNinja
 from Node import Node
-from copy import deepcopy
 from Heuristic import Heuristic
+from visualizer import SearchTreeVisualizer
+
+
+from heapq import heappop, heappush
+from copy import deepcopy
 
 def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=True):
     """
     Implements Greedy Best-First Search (GBFS) for the coloringNinja environment and returns the solution.
     The heuristic function (h) is used to estimate the distance to the goal.
     """
-    root = Node.root(environment)  # Initialize with full state, including palette and savings.
+    root = Node.root(environment)  # Initialize with the full state, including palette and savings.
 
-    # Check if the root node meets the goal condition
+    # Check if the root node already meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
         return {"actions": [], "total_cost": 0, "max_frontier": 1}
 
-    # Priority Queue for GBFS (min-heap) to prioritize nodes based on the heuristic value
-    frontier = PriorityQueue()
-    frontier.put((heuristic.calculate(root, heuristic_type), root))  # f(n) = h(n)
+    frontier = []  # Priority Queue for GBFS (min-heap)
+    root_h = heuristic.calculate(root, heuristic_type)
+    root.heuristic = root_h
+    heappush(frontier, (root_h, root))  # f(n) = h(n)
     explored = set()  # Track explored states
     max_frontier_size = 1  # Track the maximum frontier size
 
-    def is_in_frontier(frontier, state):
-        return any(state == item[1].state for item in frontier.queue)
-
-    while not frontier.empty():
-        # Pop the node with the lowest heuristic value from the frontier
-        _, node = frontier.get()
+    while frontier:
+        _, node = heappop(frontier)
         node_state_tuple = tuple(node.state)
         explored.add(node_state_tuple)  # Add the current state to the explored set
 
@@ -37,20 +39,20 @@ def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=T
         environment.paletteQuantity = dict(node.state[len(environment.line)+2])
 
         # Print the current state of the environment
-        print("Current Line State:")
-        environment.displayLineState()
+        if verbose:
+            print("Current Line State:")
+            environment.displayLineState()
 
         # Check if the agent can purchase any palettes (if savings allow)
         for color in environment.paletteQuantity:
-            if environment.paletteQuantity[color] == 0 and environment.savings >= environment.paletteCost:  # Palette cost is environment.paletteCost
+            if environment.paletteQuantity[color] == 0 and environment.savings >= environment.paletteCost:
                 # Update palette quantity to 2 if savings are enough
                 environment.paletteQuantity[color] = 2
-                environment.savings -= environment.paletteCost  # Deduct the palette cost from savings
+                environment.savings -= environment.paletteCost
                 print(f"Purchased {color} palette, new palette quantities: {environment.paletteQuantity}")
-        
+
         # Update points and savings
-        points = environment.points  # Assuming you update points based on the agent's actions
-        
+        points = environment.points
         print(f"Updated Points: {points}, Savings: {environment.savings}")
 
         # Expand the node by generating actions based on the environment
@@ -62,7 +64,7 @@ def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=T
                 print(f"  Action: {action}, Child State: {child_state_tuple}")
 
             # Check if the child state is new
-            if child_state_tuple not in explored and not is_in_frontier(frontier, child_state_tuple):
+            if child_state_tuple not in explored and not any(child_state_tuple == item[1].state for item in frontier):
                 # Check if the child is the goal
                 if child.state[:len(environment.line)] == environment.goalState:
                     if verbose:
@@ -81,10 +83,12 @@ def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=T
                         }
 
                 # Add the child to the frontier with its heuristic value
-                frontier.put((heuristic.calculate(child, heuristic_type), child))
+                child_h = heuristic.calculate(child, heuristic_type)
+                child.heuristic = child_h
+                heappush(frontier, (child_h, child))
 
         # Update the maximum frontier size
-        max_frontier_size = max(max_frontier_size, frontier.qsize())  # Track the max size of frontier
+        max_frontier_size = max(max_frontier_size, len(frontier))  # Track the max size of frontier
 
     # Return failure if no solution is found
     return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size, "goal_state": environment.goalState}
@@ -95,18 +99,23 @@ def solution(node):
 
     while node.parent is not None:
         actions.append(node.action)
-        total_cost += node.path_cost
-        print(f"Tracing Back: Action = {node.action}, Path Cost = {node.path_cost}, Total Cost So Far = {total_cost}")
-
+        total_cost += node.heuristic
+        print(f"Tracing Back: Action = {node.action}, Path Cost = {node.heuristic}, Total Cost So Far = {total_cost}")
         node = node.parent
 
     actions.reverse()
-    
     print(f"Final Solution Actions: {actions}, Total Cost: {total_cost}")
-    
+
     # Ensure we return a valid tuple
     if actions and total_cost >= 0:
         return actions, total_cost
     return None  # Return None if the solution is invalid or empty
 
+environment = coloringNinja(lineSize=6)
+heuristic=Heuristic(environment)
 
+greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=True)
+
+ # This should match your environment setup
+visualizer = SearchTreeVisualizer(environment, environment.getGoalState())
+visualizer.visualize_search_tree()

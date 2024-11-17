@@ -145,7 +145,7 @@ def run_a_star1():
     Runs the A* algorithm with Heuristic 1 and returns results along with performance metrics.
     """
     # Set up the environment for A* with Heuristic 1
-    ninja_env1 = coloringNinja(lineSize=14)  # Adjust lineSize as needed for the heuristic
+    ninja_env1 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
     heuristic1 = Heuristic(ninja_env1)
 
     # Measure memory usage and time for A* with Heuristic 1
@@ -179,7 +179,7 @@ def run_a_star2():
     Runs the A* algorithm with Heuristic 2 and returns results along with performance metrics.
     """
     # Set up the environment for A* with Heuristic 2
-    ninja_env2 = coloringNinja(lineSize=14)  # Adjust lineSize as needed for the heuristic
+    ninja_env2 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
     heuristic2 = Heuristic(ninja_env2)
 
     # Measure memory usage and time for A* with Heuristic 2
@@ -211,7 +211,7 @@ def run_greedy_algorithm1():
     """
     Runs the Greedy algorithm with Heuristic 1 and returns results along with performance metrics.
     """
-    ninja_env1 = coloringNinja(lineSize=14)  # Adjust lineSize as needed for the heuristic
+    ninja_env1 = coloringNinja(lineSize=6)  # Adjust lineSize as needed for the heuristic
     heuristic1 = Heuristic(ninja_env1)
 
     print("\nRunning Greedy with Heuristic 1...")
@@ -242,7 +242,7 @@ def run_greedy_algorithm2():
     """
     Runs the Greedy algorithm with Heuristic 2 and returns results along with performance metrics.
     """
-    ninja_env2 = coloringNinja(lineSize=14)  
+    ninja_env2 = coloringNinja(lineSize=6)  
     heuristic2 = Heuristic(ninja_env2)
 
     print("\nRunning Greedy with Heuristic 2...")

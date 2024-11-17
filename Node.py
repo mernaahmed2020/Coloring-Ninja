@@ -2,11 +2,12 @@ from environment import coloringNinja
 from copy import deepcopy
 
 class Node:
-    def __init__(self, state, parent=None, action=None, path_cost=None):
+    def __init__(self, state, parent=None, action=None, path_cost=None, heuristic=0):
         self.state = state  # Tuple containing line, agent position, savings, and palette
         self.parent = parent
         self.action = action
         self.path_cost = path_cost
+        self.heuristic = heuristic
 
     def __lt__(self, other):
         if self.path_cost is None or other.path_cost is None:

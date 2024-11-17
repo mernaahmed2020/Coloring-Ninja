@@ -12,6 +12,7 @@ from search_algorithm import *
 import time
 import psutil
 import os
+from visualizer import SearchTreeVisualizer
 #======================== run ================================
 
 
@@ -42,6 +43,7 @@ for name, algorithm in algorithms:
         total_cost = result.get("total_cost", None) if name in ["UCS", "Greedy with H1","Greedy with H2", "A*1","A*2"] else None
 
 
+
         algorithm_results.append({
             "name": name,
             "goal_state": goal_state,
@@ -51,6 +53,12 @@ for name, algorithm in algorithms:
             "memory_used":memory_used,
             "total_cost":total_cost
         })
+        
+        ninja_env = coloringNinja(lineSize=6)  # This should match your environment setup
+        visualizer = SearchTreeVisualizer(ninja_env, goal_state=goal_state)
+        visualizer.visualize_search_tree()
+                
+        
     else:
        print(f"{name} found no solution.")
        
