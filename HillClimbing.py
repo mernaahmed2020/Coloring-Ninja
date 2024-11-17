@@ -11,11 +11,13 @@ def generate_neighbors(environment, node):
     return neighbors
 
 def evaluate(environment, node):
-    completed_cells = sum(1 for cell in environment.line if cell != 0)
+    completed_cells = sum(1 for cell in environment.line if cell != "uncolored")
     return completed_cells
 
 def hill_climbing(environment, verbose=False):
 
+    #visualizer = Visualizer(environment)
+    
     current = Node.root(environment)
     current_score = evaluate(environment, current)
 
@@ -28,7 +30,8 @@ def hill_climbing(environment, verbose=False):
     frontier_size = 0
 
     while True:
-       
+        #visualizer.visualize()
+
         neighbors = generate_neighbors(environment, current)
         frontier_size = len(neighbors)
         next_state = None
@@ -45,34 +48,34 @@ def hill_climbing(environment, verbose=False):
                 best_score = score
                 next_state = neighbor
 
-        if next_state is None:
+        if next_state is None:   
             if verbose:
                 print("Reached local maximum.")
-            break
+                print("Goal state not reached.")
+            break  
 
         current = next_state
         current_score = best_score
+
+     
+        environment.line = list(current.state[:len(environment.line)])
+        environment.agentPosition = current.state[len(environment.line)]
+        environment.savings = current.state[len(environment.line) + 1]
+        environment.paletteQuantity = dict(current.state[len(environment.line) + 2])
 
         if verbose:
             print("Moved to new state:")
             environment.displayLineState()
             print(f"New Score: {current_score}")
+
     end_time = time.time()
     execution_time = end_time - start_time
 
-    if next_state is None:
-        print("Goal state not reached.")
-    else:
-        print("Goal state reached.")
-
     print("Frontier Size:", frontier_size)
     print("Time taken:", execution_time, "seconds")
-    print("Memory usage:")
+
 
     return current, current_score
- 
-
-
 
 # environment = coloringNinja()
 # result_node, result_score = hill_climbing(environment, verbose=True)

@@ -10,6 +10,7 @@ import psutil
 import os
 from Heuristic import *
 from simAnealing import simulated_annealing  
+from HillClimbing import hill_climbing
 
 
 
@@ -268,3 +269,24 @@ def run_simulated_annealing():
     print(f"Memory Used: {memory_used} MB")
 
     return ninja_env.line, result_score, elapsed_time, memory_used
+
+
+
+def run_hill_climbing():
+    ninja_env = coloringNinja(lineSize=6)
+    print("\nRun Hill Climbing")
+
+    before_memory = get_memory_usage()
+    start_time = time.time()
+
+    result_node, result_score = hill_climbing(ninja_env, verbose=False)
+
+    elapsed_time = time.time() - start_time
+    after_memory = get_memory_usage()
+    memory_used = after_memory - before_memory
+
+    print(f"Final State: {result_node.state}") 
+    print(f"Execution Time: {elapsed_time:.3f} seconds")
+    print(f"Memory Used: {memory_used} MB")
+
+    return result_node, result_score, elapsed_time, memory_used

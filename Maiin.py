@@ -72,26 +72,21 @@ def print_algorithm_summary(algorithm_results):
         
 print_algorithm_summary(algorithm_results) 
 
-# print("==============================================================================================")
 
-# environment_Hill = coloringNinja(lineSize=6)
-
-# before_memory = get_memory_usage()
-# result =hill_climbing(environment_Hill)
-
-# after_memory = get_memory_usage()  
-# memory_used = after_memory - before_memory
-
-# print(f"Hill climbing memory usage: {memory_used:.5f} MB")
  
 
 print("==============================================================================================")
 
 
 
-environment_SA = coloringNinja()  
+ 
 
 result_node, result_score, elapsed_time, memory_used = run_simulated_annealing()
+
+print("==============================================================================================")
+
+
+result_node, result_score, elapsed_time, memory_used = run_hill_climbing()
 
 
 
