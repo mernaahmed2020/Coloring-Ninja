@@ -2,6 +2,7 @@ from collections import deque
 from environment import coloringNinja
 from Node import Node
 
+
 def breadth_first_graph_search(environment, verbose=False):
     """
     Implements BFS for the coloringNinja environment and returns the solution.
@@ -10,7 +11,7 @@ def breadth_first_graph_search(environment, verbose=False):
 
     # Check if the root node meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
-        return {"actions": [], "total_cost": 0, "max_frontier": 1}
+        return {"actions": [], "total_steps": 0, "max_frontier": 1}
 
     frontier = deque([root])  # Initialize the frontier
     explored = set()  # Track explored states
@@ -62,10 +63,11 @@ def breadth_first_graph_search(environment, verbose=False):
                         print(child.state[:len(environment.line)])
                     
                     # Extract the solution (actions and cost)
-                    actions, total_cost = solution(child)
+                    actions, total_steps = solution(child)
                     return {
+                        "goal_state": child.state[:len(environment.line)],
                         "actions": actions,
-                        "total_cost": total_cost,
+                        "total_steps": total_steps,
                         "max_frontier": max_frontier_size,
                     }
 
@@ -85,13 +87,14 @@ def solution(node):
     Constructs the path of actions and calculates the total cost from the root to the goal state.
     """
     actions = []  # To store the sequence of actions
-    total_cost = 0  # Initialize total cost
+     # Initialize total cost
 
     # Traverse back to the root from the goal node
     while node.parent is not None:
         actions.append(node.action)  # Append the action leading to this node
-        total_cost += node.path_cost  # Accumulate the path cost
+        # Accumulate the path cost
         node = node.parent
 
-    # actions.reverse()  # Reverse to get the correct order
-    return actions, total_cost
+    actions.reverse()  # Reverse to get the correct order
+    total_steps = len(actions)
+    return actions, total_steps

@@ -5,7 +5,6 @@ from copy import deepcopy
 from Heuristic import Heuristic
 
 def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
- 
     root = Node.root(environment)  # Initialize with full state, including palette and savings.
 
     # Check if the root node meets the goal condition
@@ -21,6 +20,9 @@ def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
 
     def is_in_frontier(frontier, state):
         return any(state == item[1].state for item in frontier.queue)
+
+    # Memoize the heuristic function for efficiency
+    heuristic_fn = memoize(heuristic.calculate, 'h')
 
     while not frontier.empty():
         # Pop the node with the lowest f(n) value from the frontier
@@ -71,20 +73,20 @@ def a_star_search(environment, heuristic, heuristic_type=1, verbose=True):
                     if solution_result:  # Check if solution_result is not None
                         actions, total_cost = solution_result
                         return {
+                            "goal_state": environment.goalState,
                             "actions": actions,
-                            "total_cost": total_cost,
-                            "max_frontier": max_frontier_size,
-                        }
-
-                # Calculate the f(n) value for the child node
-                new_f_value = child.path_cost + heuristic.calculate(child, heuristic_type)
+                            "max_frontier": max_frontier_size,   
+                            "total_cost": total_cost}
+                
+                # Use memoized heuristic calculation
+                new_f_value = child.path_cost + heuristic_fn(child, heuristic_type)
                 frontier.put((new_f_value, child))
 
         # Update the maximum frontier size
         max_frontier_size = max(max_frontier_size, frontier.qsize())  # Track the max size of frontier
 
     # Return failure if no solution is found
-    return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size}
+    return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size, "goal_state": environment.goalState}
 
 def solution(node):
     actions = []
@@ -101,3 +103,14 @@ def solution(node):
     if actions and total_cost >= 0:
         return actions, total_cost
     return None  # Return None if the solution is invalid or empty
+
+def memoize(fn, attr_name):
+    """Memoizes function results by storing them in an attribute of the problem object."""
+    cache = {}
+
+    def memoized_fn(node, heuristic_type):
+        if node not in cache:
+            cache[node] = fn(node, heuristic_type)
+        return cache[node]
+
+    return memoized_fn

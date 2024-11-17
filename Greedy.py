@@ -72,10 +72,12 @@ def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=T
                     # Ensure the solution_result is a valid tuple before unpacking
                     if solution_result:  # Check if solution_result is not None
                         actions, total_cost = solution_result
+                        print(f"Solution Total Cost: {total_cost}")
                         return {
+                            "goal_state": environment.goalState,
                             "actions": actions,
-                            "total_cost": total_cost,
-                            "max_frontier": max_frontier_size,
+                            "max_frontier": max_frontier_size,   
+                            "total_cost": total_cost
                         }
 
                 # Add the child to the frontier with its heuristic value
@@ -85,7 +87,7 @@ def greedy_best_first_search(environment, heuristic, heuristic_type=1, verbose=T
         max_frontier_size = max(max_frontier_size, frontier.qsize())  # Track the max size of frontier
 
     # Return failure if no solution is found
-    return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size}
+    return {"actions": None, "total_cost": float('inf'), "max_frontier": max_frontier_size, "goal_state": environment.goalState}
 
 def solution(node):
     actions = []
@@ -94,11 +96,17 @@ def solution(node):
     while node.parent is not None:
         actions.append(node.action)
         total_cost += node.path_cost
+        print(f"Tracing Back: Action = {node.action}, Path Cost = {node.path_cost}, Total Cost So Far = {total_cost}")
+
         node = node.parent
 
     actions.reverse()
+    
+    print(f"Final Solution Actions: {actions}, Total Cost: {total_cost}")
     
     # Ensure we return a valid tuple
     if actions and total_cost >= 0:
         return actions, total_cost
     return None  # Return None if the solution is invalid or empty
+
+

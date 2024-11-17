@@ -10,8 +10,9 @@ def depth_first_graph_search(environment, verbose=False):
 
     # Check if the root node meets the goal condition
     if root.state[:len(environment.line)] == environment.goalState:
-        return {"actions": [], "total_cost": 0, "max_frontier": 1}
-
+        return {"goal_state": root.state[:len(environment.line)], "actions": [], "total_steps": 0, "max_frontier": 1}
+    
+    
     frontier = [root]  # Initialize the frontier with a stack
     explored = set()  # Track explored states
     max_frontier_size = 1  # Track the maximum frontier size
@@ -43,7 +44,6 @@ def depth_first_graph_search(environment, verbose=False):
         
         # Update points and savings
         points = environment.points  # Assuming you update points based on the agent's actions
-        
         print(f"Updated Points: {points}, Savings: {environment.savings}")
         
         # Expand the node by iterating over possible actions
@@ -60,16 +60,16 @@ def depth_first_graph_search(environment, verbose=False):
                     if verbose:
                         print("Goal state reached:")
                         print(child.state[:len(environment.line)])
-                        
-                    
+
                     # Extract the solution (actions and cost)
-                    actions, total_cost = solution(child)
-                    
-                    
+                    actions, total_steps = solution(child)
+
+                    # Return the result including the goal state
                     return {
+                        "goal_state": child.state[:len(environment.line)],  # Add the goal state here
                         "actions": actions,
-                        "total_cost": total_cost,
-                        "max_frontier": max_frontier_size,
+                        "total_steps": total_steps,
+                        "max_frontier": max_frontier_size
                     }
 
                 # Add the child to the frontier (stack)
@@ -81,20 +81,22 @@ def depth_first_graph_search(environment, verbose=False):
         if verbose:
             print(f"Frontier: {[node.state for node in frontier]}")
 
-    return {"actions": None, "total_cost": None, "max_frontier": max_frontier_size}
+    # Return when no solution is found
+    return {"goal_state": None, "actions": None, "total_cost": None, "max_frontier": max_frontier_size}
 
 def solution(node):
     """
     Constructs the path of actions and calculates the total cost from the root to the goal state.
     """
     actions = []  # To store the sequence of actions
-    total_cost = 0  # Initialize total cost
+     # Initialize total cost
 
     # Traverse back to the root from the goal node
     while node.parent is not None:
         actions.append(node.action)  # Append the action leading to this node
-        total_cost += node.path_cost  # Accumulate the path cost
+        # Accumulate the path cost
         node = node.parent
 
-    # actions.reverse()  # Reverse to get the correct order
-    return actions, total_cost
+    actions.reverse()  # Reverse to get the correct order
+    total_steps = len(actions)
+    return actions, total_steps

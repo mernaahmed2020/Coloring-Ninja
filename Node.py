@@ -2,13 +2,15 @@ from environment import coloringNinja
 from copy import deepcopy
 
 class Node:
-    def __init__(self, state, parent=None, action=None, path_cost=0):
+    def __init__(self, state, parent=None, action=None, path_cost=None):
         self.state = state  # Tuple containing line, agent position, savings, and palette
         self.parent = parent
         self.action = action
         self.path_cost = path_cost
 
     def __lt__(self, other):
+        if self.path_cost is None or other.path_cost is None:
+            return False  # Don't compare if one of them doesn't have path_cost
         return self.path_cost < other.path_cost
 
     def __hash__(self):
@@ -22,10 +24,10 @@ class Node:
         line, agentPosition, savings = environment.getState()
         palette = tuple(environment.paletteQuantity.items())
         state = (*line, agentPosition, savings, palette)
-        return Node(state)
+        return Node(state,path_cost=0)
 
     @staticmethod
-    def child(environment, parent_node, action):
+    def child(environment, parent_node, action,action_cost=0):
         *line, agentPosition, savings, palette = parent_node.state
         palette = dict(palette)
 
@@ -53,4 +55,12 @@ class Node:
             new_env.savings,
             tuple(new_env.paletteQuantity.items()),
         )
+        
+        
+        if parent_node.path_cost is not None:
+            new_path_cost = parent_node.path_cost + action_cost
+        else:
+            new_path_cost = None  # If no path_cost is used, set it to None
         return Node(new_state, parent_node, action, new_env.points)
+
+
