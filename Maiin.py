@@ -10,6 +10,7 @@ from Astar import a_star_search
 from HillClimbing import *
 from simAnealing import *
 from search_algorithm import *
+from Genetics import genetic_algorithm
 import time
 import psutil
 import os
@@ -87,6 +88,8 @@ print("=========================================================================
 
 
 result_node, result_score, elapsed_time, memory_used = run_hill_climbing()
+
+print("==============================================================================================")
 
 
 
