@@ -1,33 +1,40 @@
-from environment import coloringNinja
-from Node import Node
+import matplotlib.pyplot as plt
+
 class Visualizer:
-    """Visualizer for the Coloring Ninja problem."""
+    def __init__(self, game):  # Fixed the method name to `__init__`
+        self.game = game
+        # Create a color mapping for the emoji to valid matplotlib colors
+        self.color_mapping = {
+            "🍓": "red",
+            "🐳": "blue",
+            "🐸": "green",
+            "🌸": "pink", 
+            "uncolored": "white"
+        }
 
-    def _init_(self, problem):
-        """Initialize with the problem to visualize."""
-        self.problem = problem
-        self.counter = 0
+    def visualize(self):
+        """
+        Visualize the current state of the line.
+        """
+        n = len(self.game.line)
+        colors = []
+        for i, cell in enumerate(self.game.line):
+            # Use the color mapping to get a valid color
+            colors.append(self.color_mapping.get(cell, "gray"))  # Default to gray for unknown colors
 
-    def visualize(self, frontier):
-        """Visualize the frontier at each step."""
-        self.counter += 1
-        print(f"\nFrontier at step {self.counter}:")
-        for node in frontier:
-            print("\nNode State:")
-            self.visualize_state(node.state)
-        print("-" * 80)
+        fig, ax = plt.subplots(figsize=(n, 1))
+        ax.set_xlim(0, n)
+        ax.set_ylim(0, 1)
 
-    def visualize_state(self, state):
-        """Visualizes a single state."""
-        line, agent_position, savings, palette = state[:-3], state[-3], state[-2], dict(state[-1])
-        print("Line State:")
-        for idx, cell in enumerate(line):
-            marker = "🔲" if cell == "uncolored" else "✅"
-            agent = "🤖" if idx == agent_position else "   "
-            print(f"{idx+1}: {cell} {marker} {agent}")
+        # Draw cells
+        for i, color in enumerate(colors):
+            rect = plt.Rectangle((i, 0), 1, 1, facecolor=color, edgecolor="black")
+            ax.add_patch(rect)
+            # Highlight the agent position
+            if i == self.game.agentPosition:
+                ax.text(i + 0.5, 0.5, "A", color="black", ha="center", va="center", fontsize=14, fontweight="bold")
 
-        print(f"Agent Position: {agent_position + 1}")
-        print(f"Savings: {savings}")
-        print(f"Palette Quantities: {palette}")
-        print("-" * 40)
-
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.axis("off")
+        plt.show()

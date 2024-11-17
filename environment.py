@@ -53,7 +53,7 @@ class coloringNinja():
     def colorCells(self):
         if self.line[self.agentPosition] == "uncolored":
             color = self.getColorForPosition(self.agentPosition)
-            print(f"Attempting to color position {self.agentPosition} with {color}")
+            # print(f"Attempting to color position {self.agentPosition} with {color}")
 
             if self.paletteQuantity[color] > 0:
                 self.line[self.agentPosition] = color
@@ -82,7 +82,6 @@ class coloringNinja():
             self.moves += 1
             return True
         else:
-            print("Invalid move")
             return False
         
 
@@ -117,5 +116,6 @@ class coloringNinja():
     
 ninja = coloringNinja()
 ninja.printGoalState()
+
 
 

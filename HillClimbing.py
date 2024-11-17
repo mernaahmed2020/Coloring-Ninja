@@ -74,5 +74,5 @@ def hill_climbing(environment, verbose=False):
 
 
 
-environment = coloringNinja()
-result_node, result_score = hill_climbing(environment, verbose=True)
+# environment = coloringNinja()
+# result_node, result_score = hill_climbing(environment, verbose=True)

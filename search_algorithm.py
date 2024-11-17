@@ -9,6 +9,8 @@ import time
 import psutil
 import os
 from Heuristic import *
+from simAnealing import simulated_annealing  
+
 
 
 def get_memory_usage():
@@ -242,3 +244,27 @@ def run_greedy_algorithm2():
     print(f"Greedy Heuristic 2 - Memory used: {memory_used:.2f} MB")
 
     return result_greedy2, elapsed_time, memory_used
+
+
+
+
+
+def run_simulated_annealing():
+    
+    ninja_env = coloringNinja(lineSize=6)
+    print("\nRun Simulated Annealing")
+
+    before_memory = get_memory_usage()
+    start_time = time.time()
+
+    result_node, result_score = simulated_annealing(ninja_env, initial_temp=100, cooling_rate=0.95, verbose=False)
+
+    elapsed_time = time.time() - start_time
+    after_memory = get_memory_usage()
+    memory_used = after_memory - before_memory
+
+    print("Final State:", ninja_env.line) 
+    print(f"Execution Time: {elapsed_time:.2f} seconds")
+    print(f"Memory Used: {memory_used} MB")
+
+    return ninja_env.line, result_score, elapsed_time, memory_used
