@@ -93,7 +93,23 @@ class coloringNinja():
         else:
             return self.getState(), False #for Q
         
-    #separeted moving and coloring for Q
+        
+        
+            #for Q
+    def getReward(self,action,success):
+        if action =="color" and success:
+            return self.points 
+        elif action =="move":
+            return 0  
+        elif action =="skipped":
+            return -1  
+        else:
+            return -2 #penality for invalid actions
+        
+        
+        
+        
+    #separeted moving and coloring for Q and used reward function
     def getActions(self, direction):
         actions = []
         skipped_positions = []
@@ -107,15 +123,26 @@ class coloringNinja():
             # coloring action
             if success[1]:  
                 color = self.line[self.agentPosition]
-                actions.append(("color", color))  
+                actions.append(("color", color)) 
+                reward = self.getReward("color", True)
+                print(f"reward for coloring: {reward}") 
+                
             elif success[1] is False:  
                 skipped_positions.append(self.agentPosition)
                 actions.append(("skipped", self.agentPosition))  
                 print(f"Invalid move at position {self.agentPosition}, skipped.")
+                
+                reward = self.getReward("skipped", False)  
+                print(f"Reward for skipping: {reward}")
+
+                
             
             # moving action 
             if self.moveAgent(direction)[1]: 
                 actions.append(("move", direction)) 
+                reward = self.getReward("move", True) 
+                print(f"Reward for moving: {reward}")
+                
             elif not skipped_positions: 
                 break
             else:  
@@ -124,6 +151,7 @@ class coloringNinja():
                 continue
 
         return actions
+    
 
 
     
