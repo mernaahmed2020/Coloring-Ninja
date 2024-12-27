@@ -59,58 +59,72 @@ class coloringNinja():
                 self.line[self.agentPosition] = color
                 self.paletteQuantity[color] -= 1
                 self.savings += self.points
-            else:  
-                if self.savings >= self.paletteCost:
-                    self.savings -= self.paletteCost
-                    self.paletteQuantity[color] = 2 
-                    self.line[self.agentPosition] = color
-                    self.paletteQuantity[color] -= 1
-                    self.savings += self.points
-                else:  
-                    print(f"Skipped cell at {self.agentPosition} due to insufficient resources.")
-                    return False 
-            return True 
-        return None  
+                print(f"Colored position {self.agentPosition} with {color}.")
+                
+                return self.getState(), True # For Q
+            
+            
+            elif self.savings >= self.paletteCost:
+                self.savings -= self.paletteCost
+                self.paletteQuantity[color] = 2  
+                self.line[self.agentPosition] = color
+                self.paletteQuantity[color] -= 1
+                self.savings += self.points
+                return self.getState(), True 
+                print(f"Colored position {self.agentPosition} with {color} after buying new palette.")
+
+            else: 
+                 
+                print(f"Skipped position at {self.agentPosition} due to insufficient resources.")
+                
+                return self.getState(), False #for Q
+                    
+        return self.getState(), False #for Q (already colored)
 
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
             self.agentPosition -= 1
             self.moves += 1
-            return True
+            return self.getState(), True #for Q
         elif direction == "right" and self.agentPosition < len(self.line) - 1:
             self.agentPosition += 1
             self.moves += 1
-            return True
+            return self.getState(), True #for Q
         else:
-            return False
+            return self.getState(), False #for Q
         
-
+    #separeted moving and coloring for Q
     def getActions(self, direction):
         actions = []
         skipped_positions = []
         print(f"Generating actions from state: {self.line}, agentPosition: {self.agentPosition}, palette: {self.paletteQuantity}")
 
-
+        
         while "uncolored" in self.line:
+            
             success = self.colorCells()
-            if success:
+            
+            # coloring action
+            if success[1]:  
                 color = self.line[self.agentPosition]
-                actions.append(("color", color))
-            elif success is False: 
+                actions.append(("color", color))  
+            elif success[1] is False:  
                 skipped_positions.append(self.agentPosition)
-                actions.append(("skipped", self.agentPosition))
+                actions.append(("skipped", self.agentPosition))  
                 print(f"Invalid move at position {self.agentPosition}, skipped.")
-
-          
-            if not self.moveAgent(direction):
-                if skipped_positions:  
-                    self.agentPosition = skipped_positions.pop(0)
-                    print(f"Revisiting skipped cell at position {self.agentPosition}.")
-                    continue
-                else:  
-                    break
+            
+            # moving action 
+            if self.moveAgent(direction)[1]: 
+                actions.append(("move", direction)) 
+            elif not skipped_positions: 
+                break
+            else:  
+                self.agentPosition = skipped_positions.pop(0)
+                print(f"revisiting skipped position {self.agentPosition}.")
+                continue
 
         return actions
+
 
     
     
