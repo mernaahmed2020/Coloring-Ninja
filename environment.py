@@ -61,7 +61,7 @@ class coloringNinja():
                 self.savings += self.points
                 print(f"Colored position {self.agentPosition} with {color}.")
                 
-                return self.getState(), True 
+                return self.getState(), True  #for Q
             
             
             elif self.savings >= self.paletteCost:
@@ -70,26 +70,26 @@ class coloringNinja():
                 self.line[self.agentPosition] = color
                 self.paletteQuantity[color] -= 1
                 self.savings += self.points
-                return self.getState(), True 
+                return self.getState(), True   #for Q
                 print(f"Colored position {self.agentPosition} with {color} after buying new palette.")
 
             else: 
                  
                 print(f"Skipped position at {self.agentPosition} due to insufficient resources.")
                 
-                return self.getState(), False 
+                return self.getState(), False  #for Q
                     
-        return self.getState(), False 
+        return self.getState(), False  #for Q
 
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
             self.agentPosition -= 1
-            return self.getState(), True 
+            return self.getState(), True  #for Q
         elif direction == "right" and self.agentPosition < self.size - 1:
             self.agentPosition += 1
-            return self.getState(), True 
+            return self.getState(), True  #for Q
         else:
-            return self.getState(), False 
+            return self.getState(), False  #for Q
 
         
         
