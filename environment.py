@@ -84,29 +84,27 @@ class coloringNinja():
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
             self.agentPosition -= 1
-            self.moves += 1
-            return self.getState(), True #for Q
-        elif direction == "right" and self.agentPosition < len(self.line) - 1:
+            return self.getState(), True #forQ
+        elif direction == "right" and self.agentPosition < self.size - 1:
             self.agentPosition += 1
-            self.moves += 1
-            return self.getState(), True #for Q
+            return self.getState(), True #forQ
         else:
-            return self.getState(), False #for Q
+            return self.getState(), False #forQ
+
         
         
         
             #for Q
-    def getReward(self,action,success):
-        if action =="color" and success:
-            return self.points 
-        elif action =="move":
-            return 0  
-        elif action =="skipped":
-            return -1  
-        else:
-            return -2 #penality for invalid actions
-        
-        
+    def getReward(self, action, success):
+        if action == "move" and not success:
+            return -1  # Penalize invalid moves
+        elif action == "move" and success:
+            return 1  # Reward valid moves
+        elif action == "color" and success:
+            return 10  # Reward successful coloring
+        return 0
+
+
         
         
     #separeted moving and coloring for Q and used reward function
