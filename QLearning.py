@@ -13,7 +13,7 @@ class QLearningAgent:
         self.epsilon = epsilon
         self.Q = defaultdict(float)
         self.actions = ["move_left", "move_right", "color"]
-        self.transitions = [] 
+        # self.transitions = [] 
 
     def get_state_key(self, state):
        
@@ -75,7 +75,7 @@ class QLearningAgent:
                         reward = self.env.getReward("skipped", False)
                 print(f"Action Result - Next State: {next_state}, Success: {success}, Reward: {reward}")
                 
-                self.transitions.append((state, action, next_state))
+                # self.transitions.append((state, action, next_state))
                 
                 self.learn(state, action, reward, next_state)
                 q_key = self.get_state_key(state) + (action,)
@@ -123,4 +123,4 @@ class QLearningAgent:
 
 ninja = coloringNinja()
 q_agent = QLearningAgent(ninja)
-q_agent.train(episodes=500)
+q_agent.train(episodes=300)
