@@ -91,7 +91,7 @@ result_node, result_score, elapsed_time, memory_used = run_hill_climbing()
 
 print("==============================================================================================")
 
-
+run_q_learning()
 
 
 

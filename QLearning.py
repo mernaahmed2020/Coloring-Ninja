@@ -12,10 +12,10 @@ class QLearningAgent:
         self.epsilon = epsilon
         self.Q = defaultdict(float)
         self.actions = ["move_left", "move_right", "color"]
-        self.transitions = []  # To track state-action-state transitions
+        self.transitions = [] 
 
     def get_state_key(self, state):
-        # Convert state to a hashable key for Q-table
+        
         return (tuple(state[0]), state[1], state[2])
 
     def choose_action(self, state, epsilon_greedy=True):
@@ -29,10 +29,10 @@ class QLearningAgent:
         q_key = self.get_state_key(state) + (action,)
         next_q_key = self.get_state_key(next_state) + (self.choose_action(next_state, epsilon_greedy=False),)
         self.Q[q_key] += self.alpha * (reward + self.gamma * self.Q[next_q_key] - self.Q[q_key])
-        self.transitions.append((state, action, next_state))  # Record the transition
+        self.transitions.append((state, action, next_state))  
 
     def is_terminal(self, state):
-        # Check if the current state matches the goal state
+        
         goal_state = self.env.getGoalState()
         return state == goal_state
 
@@ -68,23 +68,23 @@ class QLearningAgent:
                     done = True
 
             self.epsilon = max(0.1, self.epsilon * 0.99)
-            print(f"Episode {episode+1} Summary: Total Rewards: {rewards}, Steps: {steps}, Final Epsilon: {self.epsilon}")
-
-        # After training, draw the search tree
+        print(f"Episode {episode+1} Summary: Total Rewards: {rewards}, Steps: {steps}, Final Epsilon: {self.epsilon}")
+        print(f"Current state {state}")
+        
     #     self.draw_search_tree()
 
     # def draw_search_tree(self):
-    #     # Create a graph from the transitions
+    #   
     #     G = nx.DiGraph()
     #     for state, action, next_state in self.transitions:
-    #         # Add nodes (state) and edges (action)
+    #       
     #         state_key = self.get_state_key(state)
     #         next_state_key = self.get_state_key(next_state)
     #         G.add_node(state_key)
     #         G.add_node(next_state_key)
     #         G.add_edge(state_key, next_state_key, action=action)
 
-    #     # Draw the search tree
+    #    
     #     pos = nx.spring_layout(G)  # Using the spring layout for node positioning
     #     plt.figure(figsize=(12, 8))
     #     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="lightblue", font_size=10, font_weight="bold", edge_color="gray")
@@ -94,7 +94,7 @@ class QLearningAgent:
     #     plt.show()
 
 
-# Initialize and train the Q-learning agent
+
 ninja = coloringNinja()
 q_agent = QLearningAgent(ninja)
 q_agent.train(episodes=500)

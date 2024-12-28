@@ -61,7 +61,7 @@ class coloringNinja():
                 self.savings += self.points
                 print(f"Colored position {self.agentPosition} with {color}.")
                 
-                return self.getState(), True # For Q
+                return self.getState(), True 
             
             
             elif self.savings >= self.paletteCost:
@@ -77,37 +77,37 @@ class coloringNinja():
                  
                 print(f"Skipped position at {self.agentPosition} due to insufficient resources.")
                 
-                return self.getState(), False #for Q
+                return self.getState(), False 
                     
-        return self.getState(), False #for Q (already colored)
+        return self.getState(), False 
 
     def moveAgent(self, direction):
         if direction == "left" and self.agentPosition > 0:
             self.agentPosition -= 1
-            return self.getState(), True #forQ
+            return self.getState(), True 
         elif direction == "right" and self.agentPosition < self.size - 1:
             self.agentPosition += 1
-            return self.getState(), True #forQ
+            return self.getState(), True 
         else:
-            return self.getState(), False #forQ
+            return self.getState(), False 
 
         
         
         
-            #for Q
+           
     def getReward(self, action, success):
         if action == "move" and not success:
-            return -1  # Penalize invalid moves
+            return -1  
         elif action == "move" and success:
-            return 1  # Reward valid moves
+            return 1  
         elif action == "color" and success:
-            return 10  # Reward successful coloring
+            return 10 
         return 0
 
 
         
         
-    #separeted moving and coloring for Q and used reward function
+   
     def getActions(self, direction):
         actions = []
         skipped_positions = []
@@ -118,7 +118,7 @@ class coloringNinja():
             
             success = self.colorCells()
             
-            # coloring action
+            
             if success[1]:  
                 color = self.line[self.agentPosition]
                 actions.append(("color", color)) 
@@ -135,7 +135,7 @@ class coloringNinja():
 
                 
             
-            # moving action 
+           
             if self.moveAgent(direction)[1]: 
                 actions.append(("move", direction)) 
                 reward = self.getReward("move", True) 
