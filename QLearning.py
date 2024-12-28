@@ -1,6 +1,8 @@
 import numpy as np
 from collections import defaultdict
 from environment import coloringNinja
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class QLearningAgent:
     def __init__(self, environment, alpha=0.1, gamma=0.9, epsilon=0.5):
@@ -10,6 +12,7 @@ class QLearningAgent:
         self.epsilon = epsilon
         self.Q = defaultdict(float)
         self.actions = ["move_left", "move_right", "color"]
+        self.transitions = []  # To track state-action-state transitions
 
     def get_state_key(self, state):
         # Convert state to a hashable key for Q-table
@@ -26,6 +29,7 @@ class QLearningAgent:
         q_key = self.get_state_key(state) + (action,)
         next_q_key = self.get_state_key(next_state) + (self.choose_action(next_state, epsilon_greedy=False),)
         self.Q[q_key] += self.alpha * (reward + self.gamma * self.Q[next_q_key] - self.Q[q_key])
+        self.transitions.append((state, action, next_state))  # Record the transition
 
     def is_terminal(self, state):
         # Check if the current state matches the goal state
@@ -34,18 +38,13 @@ class QLearningAgent:
 
     def train(self, episodes=50, step_limit=50):
         for episode in range(episodes):
-            print(f"\n=== Starting Episode {episode+1} ===")
             state = self.env.initialState
             done = False
             rewards = 0
             steps = 0
 
             while not done:
-                print(f"\nCurrent State: {state}")
-                
                 action = self.choose_action(state)
-                print(f"Chosen Action: {action}, Epsilon: {self.epsilon}")
-
                 if action == "move_left":
                     next_state, success = self.env.moveAgent("left")
                     reward = self.env.getReward("move", success)
@@ -59,29 +58,40 @@ class QLearningAgent:
                     else:
                         reward = self.env.getReward("skipped", False)
 
-                print(f"Action Result - Next State: {next_state}, Success: {success}, Reward: {reward}")
-
                 self.learn(state, action, reward, next_state)
-
-                q_key = self.get_state_key(state) + (action,)
-                print(f"Q-value Update: Q[{q_key}] = {self.Q[q_key]}")
 
                 state = next_state
                 rewards += reward
                 steps += 1
 
-                # Check if the current state is terminal or step limit is reached
-                if self.is_terminal(state):
-                    print("Goal State Reached! Ending Episode.")
-                    done = True
-                elif steps >= step_limit:
-                    print(f"Step limit of {step_limit} reached. Ending Episode.")
+                if self.is_terminal(state) or steps >= step_limit:
                     done = True
 
-            # Decay epsilon after each episode
             self.epsilon = max(0.1, self.epsilon * 0.99)
-
             print(f"Episode {episode+1} Summary: Total Rewards: {rewards}, Steps: {steps}, Final Epsilon: {self.epsilon}")
+
+        # After training, draw the search tree
+    #     self.draw_search_tree()
+
+    # def draw_search_tree(self):
+    #     # Create a graph from the transitions
+    #     G = nx.DiGraph()
+    #     for state, action, next_state in self.transitions:
+    #         # Add nodes (state) and edges (action)
+    #         state_key = self.get_state_key(state)
+    #         next_state_key = self.get_state_key(next_state)
+    #         G.add_node(state_key)
+    #         G.add_node(next_state_key)
+    #         G.add_edge(state_key, next_state_key, action=action)
+
+    #     # Draw the search tree
+    #     pos = nx.spring_layout(G)  # Using the spring layout for node positioning
+    #     plt.figure(figsize=(12, 8))
+    #     nx.draw(G, pos, with_labels=True, node_size=2000, node_color="lightblue", font_size=10, font_weight="bold", edge_color="gray")
+    #     edge_labels = nx.get_edge_attributes(G, 'action')
+    #     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    #     plt.title("Q-Learning Search Tree")
+    #     plt.show()
 
 
 # Initialize and train the Q-learning agent
